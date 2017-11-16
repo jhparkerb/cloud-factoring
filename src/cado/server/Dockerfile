@@ -12,7 +12,7 @@ CMD /pkg/cado/bin/cado-nfs.py \
 	$(cat 14447_190) \
 	server.port=4242 \
 	server.ssl=no \
-	server.whitelist=localhost,172.17.0.0/16 \
+	server.whitelist=localhost,172.17.0.0/16,10.128.0.0/16 \
 	--client-threads 8 \
 	--server-threads 2 \
 	--workdir=/home/cado/14447_190.work
