@@ -25,7 +25,7 @@ RUN apt-get update && \
 	apt-get install -y \
 		$DEPS
 
-ADD https://ftp.gnu.org/gnu/gmp/gmp-6.1.2.tar.bz2 ./gmp-6.1.2.tar.bz2
+COPY gmp-6.1.2.tar.bz2 .
 RUN tar jxf gmp-6.1.2.tar.bz2
 
 WORKDIR gmp-6.1.2
@@ -35,7 +35,7 @@ RUN CFLAGS="-static -Ofast" LDFLAGS="-s" ./configure --enable-static --prefix=/p
 
 WORKDIR ..
 
-ADD https://gforge.inria.fr/frs/download.php/file/37058/cado-nfs-2.3.0.tar.gz ./cado-nfs-2.3.0.tar.gz
+COPY ./cado-nfs-2.3.0.tar.gz .
 RUN tar zxf cado-nfs-2.3.0.tar.gz
 
 WORKDIR cado-nfs-2.3.0
