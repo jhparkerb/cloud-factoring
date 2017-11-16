@@ -4,7 +4,6 @@ FROM cado-base
 
 ARG N=14447_190
 
-COPY 14447_190 /home/cado/
 USER cado
 WORKDIR /home/cado
 EXPOSE 4242

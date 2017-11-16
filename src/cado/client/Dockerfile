@@ -4,7 +4,6 @@ FROM cado-base
 
 ARG server
 
-COPY client.sh /home/cado/
 USER cado
 WORKDIR /home/cado
 CMD /pkg/cado/bin/cado-nfs-client.py \
