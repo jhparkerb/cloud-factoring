@@ -42,5 +42,5 @@ WORKDIR cado-nfs-2.3.0
 
 RUN make install CFLAGS="-static -std=c99" CXXFLAGS="-static -std=c++11" LDFLAGS="-s" PREFIX=/pkg/cado GMP=/pkg/gmp
 
-FROM debian:jessie-slim
+FROM alpine:latest
 COPY --from=buildenv /pkg /pkg

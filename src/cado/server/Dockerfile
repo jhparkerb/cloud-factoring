@@ -2,8 +2,6 @@
 # connections from clients.
 FROM cado-base
 
-ARG N=14447_190
-
 USER cado
 WORKDIR /home/cado
 EXPOSE 4242
