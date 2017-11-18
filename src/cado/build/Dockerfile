@@ -30,7 +30,7 @@ RUN tar jxf gmp-6.1.2.tar.bz2
 
 WORKDIR gmp-6.1.2
 
-RUN CFLAGS="-static -Ofast" LDFLAGS="-s" ./configure --enable-static --prefix=/pkg/gmp &&  \
+RUN CFLAGS="-static -std=c99 -O3 -W -Wall -mssse3 -msse4.1 -mavx -mavx2 -mpclmul" LDFLAGS="-s" ./configure --enable-static --prefix=/pkg/gmp &&  \
 	make install check
 
 WORKDIR ..
@@ -40,7 +40,7 @@ RUN tar zxf cado-nfs-2.3.0.tar.gz
 
 WORKDIR cado-nfs-2.3.0
 
-RUN make install CFLAGS="-static -std=c99" CXXFLAGS="-static -std=c++11" LDFLAGS="-s" PREFIX=/pkg/cado GMP=/pkg/gmp
+RUN make install CFLAGS="-static -std=c99 -O3 -W -Wall -mssse3 -msse4.1 -mavx -mavx2 -mpclmul" CXXFLAGS="-static -std=c++11 -O3 -W -Wall -mssse3 -msse4.1 -mavx -mavx2 -mpclmul" LDFLAGS="-s" PREFIX=/pkg/cado GMP=/pkg/gmp
 
 FROM alpine:latest
 COPY --from=buildenv /pkg /pkg
