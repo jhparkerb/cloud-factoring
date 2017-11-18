@@ -2,10 +2,9 @@
 # named server for work.
 FROM cado-base
 
-ARG server
-
 USER cado
 WORKDIR /home/cado
-CMD /pkg/cado/bin/cado-nfs-client.py \
-		--server=http://${server}:4242/ \
-		--workdir=/home/cado/client-work
+CMD sleep $(( $RANDOM % 300 )) && \
+	/pkg/cado/bin/cado-nfs-client.py \
+		--server=http://cado-server:4242/ \
+		--workdir=/home/cado/$(hostname)
