@@ -5,6 +5,7 @@ FROM cado-build
 
 ENV DEPS ' \
 	bc \
+	bind-tools \
 	curl \
 	gzip \
 	less \
