@@ -12,4 +12,4 @@ CMD /pkg/cado/bin/cado-nfs.py \
 	server.port=4242 \
 	server.ssl=no \
 	server.whitelist=0.0.0.0/0 \
-	--workdir=/home/cado/14447_190.work
+	--workdir=/home/cado/37771_187.work
