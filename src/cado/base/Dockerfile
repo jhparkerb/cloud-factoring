@@ -22,4 +22,7 @@ ENV DEPS ' \
 
 RUN apk update && \
 	apk add $DEPS && \
+	apk add tzdata && \
+	cp /usr/share/zoneinfo/US/Eastern /etc/localtime && \
+	apk del tzdata && \
 	adduser -D cado
