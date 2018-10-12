@@ -4,7 +4,6 @@ FROM cado-base
 
 USER cado
 WORKDIR /home/cado
-CMD sleep $(( $RANDOM % 300 )) && \
-	/pkg/cado/bin/cado-nfs-client.py \
-		--server=http://cado-server:4242/ \
-		--workdir=/home/cado/$(hostname)
+CMD /pkg/cado/bin/cado-nfs-client.py \
+		--workdir=/home/cado/$(hostname) \
+		--server=
