@@ -27,7 +27,7 @@ do
 		cado \
 			/pkg/cado/bin/cado-nfs-client.py \
 				--workdir=. \
-				--bindir=/pkg/cado/lib/cado-nfs-2.3.0 \
+				--bindir=/pkg/cado/lib/cado-nfs-3.0.0 \
 				--server=http://dist:4242/
 done
 

@@ -1,5 +1,8 @@
 # Build cado-nfs from source and install it into /pkg/cado.
-FROM debian:jessie-slim AS buildenv
+FROM debian:buster-slim AS buildenv
+
+# Tell debconf to run in non-interactive mode
+ENV DEBIAN_FRONTEND noninteractive
 
 ENV DEPS ' \
 	autoconf \
@@ -10,6 +13,7 @@ ENV DEPS ' \
 	clang \
 	cmake \
 	dpkg-dev \
+	git \
 	libtool \
 	make \
 	mercurial \
@@ -21,26 +25,32 @@ ENV DEPS ' \
 	texinfo \
 	'
 
-RUN apt-get update && \
-	apt-get install -y \
-		$DEPS
+RUN apt-get update && apt-get install -y \
+	$DEPS \
+	--no-install-recommends
 
-COPY gmp-6.1.2.tar.bz2 .
-RUN tar jxf gmp-6.1.2.tar.bz2
+RUN hg clone https://gmplib.org/repo/gmp/ gmp
 
-WORKDIR gmp-6.1.2
+WORKDIR gmp
 
-RUN CFLAGS="-static -std=c99 -O2 -W -Wall" LDFLAGS="-s" ./configure --enable-static --prefix=/pkg/gmp &&  \
-	make install check
+RUN ./.bootstrap && \
+	CFLAGS="-static -std=c99 -O3 -Ofast -W -Wall" \
+	LDFLAGS="-s" \
+	./configure --enable-static --prefix=/pkg/gmp &&  \
+	make -j8 install
 
 WORKDIR ..
 
-COPY ./cado-nfs-2.3.0.tar.gz .
-RUN tar zxf cado-nfs-2.3.0.tar.gz
+RUN git clone https://scm.gforge.inria.fr/anonscm/git/cado-nfs/cado-nfs.git
 
-WORKDIR cado-nfs-2.3.0
+WORKDIR cado-nfs
 
-RUN make install CFLAGS="-static -std=c99 -O2 -W -Wall" CXXFLAGS="-static -std=c++11 -O2" LDFLAGS="-s" PREFIX=/pkg/cado GMP=/pkg/gmp
+RUN make -j8 install \
+	CFLAGS="-static -std=c99 -O3 -Ofast -W -Wall" \
+	CXXFLAGS="-static -std=c++11 -O3 -Ofast -W -Wall" \
+	LDFLAGS="-s" \
+	PREFIX="/pkg/cado" \
+	GMP="/pkg/gmp"
 
 FROM alpine:latest as cado-build
 COPY --from=buildenv /pkg /pkg
