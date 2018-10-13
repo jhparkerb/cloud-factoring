@@ -74,10 +74,6 @@ ENV DEPS ' \
 	vim \
 	'
 
-#	libgomp1 \
-#	iputils-ping \
-#	libdata-dumper-concise-perl \
-
 RUN apk update && \
 	apk add $DEPS && \
 	apk add tzdata && \

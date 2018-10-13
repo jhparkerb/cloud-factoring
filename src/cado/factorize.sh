@@ -29,6 +29,7 @@ do
 				--workdir=. \
 				--bindir=/pkg/cado/lib/cado-nfs-3.0.0 \
 				--server=http://dist:4242/
+	tmux new-window -n client-${num} "docker attach client-${num}; read"
 done
 
 docker run \
