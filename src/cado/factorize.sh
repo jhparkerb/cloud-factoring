@@ -17,13 +17,14 @@ docker network create ${NET_NAME}
 
 docker volume rm -f work
 
-for client in $(seq 1 $NUM_CORES)
+for num in $(seq 1 $NUM_CORES)
 do
 	docker run \
 		--network ${NET_NAME} \
 		--cpus=1 \
+		--name=client-${num} \
 		-d \
-		cado-client \
+		cado \
 			/pkg/cado/bin/cado-nfs-client.py \
 				--workdir=. \
 				--bindir=/pkg/cado/lib/cado-nfs-2.3.0 \
@@ -35,7 +36,7 @@ docker run \
 	--cpus=${NUM_CORES}.0 \
 	--name=dist \
 	--mount=type=volume,source=work,target=/home/cado \
-	cado-server \
+	cado \
 		/pkg/cado/bin/cado-nfs.py \
 			--server \
 			--workdir=/home/cado \
@@ -52,7 +53,7 @@ docker run \
 	--cpus=${NUM_CORES}.0 \
 	--name=local \
 	--mount=type=volume,source=work,target=/home/cado \
-	cado-server \
+	cado \
 		/pkg/cado/bin/cado-nfs.py \
 			-t all \
 			--workdir=/home/cado \
