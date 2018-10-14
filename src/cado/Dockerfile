@@ -62,21 +62,24 @@ COPY --from=buildenv /pkg /pkg
 FROM cado-build as cado
 
 ENV DEPS ' \
-	bc \
 	bind-tools \
 	curl \
 	gzip \
-	less \
 	openssl \
 	perl \
 	python \
 	python3 \
+	tzdata \
+	'
+
+ENV NON_ESSENTIAL ' \
+	bc \
+	less \
 	vim \
 	'
 
 RUN apk update && \
 	apk add $DEPS && \
-	apk add tzdata && \
 	cp /usr/share/zoneinfo/US/Eastern /etc/localtime && \
 	apk del tzdata && \
 	adduser -D cado
