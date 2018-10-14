@@ -1,6 +1,6 @@
 #!/bin/bash
 
-NUM_CORES=6
+NUM_CORES=7
 NET_NAME=cado-net
 
 BITS=300
