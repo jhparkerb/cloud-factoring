@@ -1,0 +1,3 @@
+ * build into a minimal container
+ * build leader and follower container
+ * use postgresql as the backing store
