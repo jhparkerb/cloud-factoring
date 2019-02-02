@@ -1,0 +1,8 @@
+#!/bin/sh
+
+# if the database is not iniitialized, initialized it accordig to
+# the instructions with the ecmnet source distribution.
+
+echo 'Database may not be initialized!  Exiting!'
+
+exit 1
