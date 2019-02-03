@@ -1,0 +1,16 @@
+- hosts: dev
+  remote_user: jasonp
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: install dev tools
+    - name: check out source code?
+    - name: check out project
+
+- hosts: gluster
+  remote_user: jasonp
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: install glusterFS packages
+    - name: set up glusterFS bricks

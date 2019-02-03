@@ -1,0 +1,75 @@
+# Take a newly installimage'd host and turn it into a fully upgraded Debian
+# system that we can use.
+#
+# All of this should probably be removed in favor of using a custom image:
+# https://wiki.hetzner.de/index.php/Installimage/en .
+#
+# Further, targeting testing or unstable will probably only guarantee that
+# hosts fall out of syn with one another, whereas using the current stable
+# release would be much more consistent.
+#
+# TODO:  find out if any of this works, at all.
+---
+- name: Prep Ansible
+  remote_user: root
+  become: yes
+  gather_facts: no
+  pre_tasks:
+    - name: Install Python
+      raw: test -e /usr/bin/python || (apt-get update -y && apt-get isntall -y python-minimal)
+
+- name: Bootstrap system for future use
+  hosts: all
+  remote_user: root
+
+  vars:
+    user_name: jasonp
+    user_gecos: Jason Parker-Burlingham
+    password: $6$B3FTcWERoVyHV$4RnhZSGAs99wZUSPguwJlpy6dmTBPdzWdCDmG0bjrMl9vIJlS0Z03HnZx3BqLIt31RjUXK2BCPZLYZg2BovN20
+
+  tasks:
+    - name: Set hostname
+      hostname:
+        name: {{ machine_name }}
+
+    - name: Reboot host
+      command: /sbin/reboot
+
+    # TODO: create role accounts
+    - name: Create user account with sudoers
+      user: >
+        name={{ user_name }}
+        gecos={{ user_gecos }}
+        password={{ user_pass }}
+        shell=/bin/bash
+        groups=sudo
+        append=yes
+        state=present
+
+    - name: Add SSH keys
+      authorized_key:
+        user: "{{ user_name }}"
+        key: "{{ lookup('file', 'certs/id_rsa.pub') }}"
+        state: present
+
+		- name: Remove root SSH access
+      lineinfile: 
+				dest: /etc/ssh/sshd_config 
+				regexp: "^PermitRootLogin" 
+				line: "PermitRootLogin no" 
+				state: present
+
+    - name: Target testing distribution
+      apt_repository:
+        repo: '{{ item }}'
+      with_items:
+        - deb http://mirror.hetzner.de/debian/packages testing main contrib non-free
+        - deb http://ftp.de.debian.org/debian/ testing main non-free contrib
+        - deb-src http://ftp.de.debian.org/debian/ testing main contrib
+
+    # TODO: not clear if old apt repository items need to be removed first
+    - name: Upgrade to testing
+      apt: upgrade=safe
+
+    - name: Reboot host after upgrade
+      command: /sbin/reboot
