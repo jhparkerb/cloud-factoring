@@ -18,6 +18,8 @@ HOSTNAME Debian-96-stretch-64-minimal
 PART swap  swap  64G
 PART /boot ext3 512M
 PART /     ext4  40G
+# TODO: /pkg and /data should probably be gluster mounts with the backing
+# store in a directory called /brick, or something.
 PART /pkg  ext4  10G
 PART /data ext4  all
 
