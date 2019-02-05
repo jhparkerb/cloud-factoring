@@ -7,39 +7,41 @@
 # Further, targeting testing or unstable will probably only guarantee that
 # hosts fall out of syn with one another, whereas using the current stable
 # release would be much more consistent.
-#
-# TODO:  find out if any of this works, at all.
 ---
-- name: Prep Ansible
+- name: Boostrap Ansible by installing Python
+  hosts: all
   remote_user: root
-  become: yes
-  gather_facts: no
+  gather_facts: False
   pre_tasks:
     - name: Install Python
-      raw: test -e /usr/bin/python || (apt-get update -y && apt-get isntall -y python-minimal)
+      raw: test -e /usr/bin/python || (apt-get -y update && apt-get -y install python)
+      register: test
+      changed_when: test.stdout
+    - setup:
+      name: Run setup phase to gather facts
 
-- name: Bootstrap system for future use
+- name: Prepare system for future use
   hosts: all
   remote_user: root
 
   vars:
     user_name: jasonp
     user_gecos: Jason Parker-Burlingham
-    password: $6$B3FTcWERoVyHV$4RnhZSGAs99wZUSPguwJlpy6dmTBPdzWdCDmG0bjrMl9vIJlS0Z03HnZx3BqLIt31RjUXK2BCPZLYZg2BovN20
+    # TODO: make unique passwords and store on the ansible system.
+    user_pass: $6$XCfa2znJu6C$VHSq/l6FBXVydvvA7TQj1ZFgcO1yq0saIsrF2CkowbonISpeI5oIvPuENVVmEKfB6xXzZWdAqmOwMJZlYQXha1
 
   tasks:
     - name: Set hostname
       hostname:
-        name: {{ machine_name }}
+        name: "{{ inventory_hostname_short }}"
+      notify:
+        - reboot system
 
-    - name: Reboot host
-      command: /sbin/reboot
-
-    # TODO: create role accounts
+    # TODO: create role accounts.
     - name: Create user account with sudoers
       user: >
         name={{ user_name }}
-        gecos={{ user_gecos }}
+        comment={{ user_gecos }}
         password={{ user_pass }}
         shell=/bin/bash
         groups=sudo
@@ -52,13 +54,16 @@
         key: "{{ lookup('file', 'certs/id_rsa.pub') }}"
         state: present
 
-		- name: Remove root SSH access
+    - name: Remove root SSH access
       lineinfile: 
-				dest: /etc/ssh/sshd_config 
-				regexp: "^PermitRootLogin" 
-				line: "PermitRootLogin no" 
-				state: present
+        dest: /etc/ssh/sshd_config
+        regexp: "^PermitRootLogin"
+        line: "PermitRootLogin no"
+        state: present
+      notify:
+        - restart sshd
 
+    # apt_repository updates the APT cache for us, no need to do it later.
     - name: Target testing distribution
       apt_repository:
         repo: '{{ item }}'
@@ -67,9 +72,14 @@
         - deb http://ftp.de.debian.org/debian/ testing main non-free contrib
         - deb-src http://ftp.de.debian.org/debian/ testing main contrib
 
-    # TODO: not clear if old apt repository items need to be removed first
     - name: Upgrade to testing
-      apt: upgrade=safe
+      apt:
+        upgrade: dist
+      notify:
+        - reboot system
 
-    - name: Reboot host after upgrade
-      command: /sbin/reboot
+  handlers:
+    - name: restart sshd
+      service: name=sshd state=restarted
+    - name: reboot system
+      reboot:
