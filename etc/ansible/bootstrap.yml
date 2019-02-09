@@ -7,18 +7,41 @@
 # Further, targeting testing or unstable will probably only guarantee that
 # hosts fall out of syn with one another, whereas using the current stable
 # release would be much more consistent.
+
+# $ ansible-console-2.7 -f 6 -u root \
+#     --ssh-common-args='-o StrictHostKeyChecking=no' -i prod -l gauss.jhpb.org
+# Welcome to the ansible console.
+# Type help or ? to list commands.
+#
+# root@all (1)[f:6]$ copy src=../autosetup dest=autosetup
+# gauss.jhpb.org | CHANGED => {
+#     "changed": true,
+#     "checksum": "05587f23f273a8546d0ba36ec246417d2f3c0aca",
+#     "dest": "./autosetup",
+#     "gid": 0,
+#     "group": "root",
+#     "md5sum": "b212769622a487a55aba34acc4573738",
+#     "mode": "0644",
+#     "owner": "root",
+#     "size": 619,
+#     "src": "/root/.ansible/tmp/ansible-tmp-1549690693.31-52927625600297/source",
+#     "state": "file",
+#     "uid": 0
+# }
+# root@all (1)[f:6]$ shell /root/.oldroot/nfs/install/installimage -n "{{ inventory_hostname_short }}" -a -c autosetup
+# root@all (1)[f:6]$ shell reboot
 ---
-- name: Boostrap Ansible by installing Python
-  hosts: all
-  remote_user: root
+- hosts: all
   gather_facts: False
+  remote_user: root
+  # Note that this will not work in check mode, -C
   pre_tasks:
-    - name: Install Python
-      raw: test -e /usr/bin/python || (apt-get -y update && apt-get -y install python)
-      register: test
-      changed_when: test.stdout
-    - setup:
-      name: Run setup phase to gather facts
+    - name: Install python for Ansible
+      raw: bash -c "test -e /usr/bin/python || (apt -qqy update && apt install -qqy python-minimal)"
+      register: output
+      changed_when: output.stdout != ""
+    - name: Gathering Facts
+      setup:
 
 - name: Prepare system for future use
   hosts: all
@@ -28,14 +51,29 @@
     user_name: jasonp
     user_gecos: Jason Parker-Burlingham
     # TODO: make unique passwords and store on the ansible system.
-    user_pass: $6$XCfa2znJu6C$VHSq/l6FBXVydvvA7TQj1ZFgcO1yq0saIsrF2CkowbonISpeI5oIvPuENVVmEKfB6xXzZWdAqmOwMJZlYQXha1
+    user_pass: $6$YDzKgb06ufenTu8$2wA9ZIG54RIpSy0jGydpQf3x2CSKpBmNUpAoY6AVpBSmZFk/OyDm82T4W3/6NmFzMvQdGGA/H.EHjCtqNDLeC.
+
+  handlers:
+  - name: restart sshd
+    service:
+      name: sshd
+      state: restarted
+  - name: reboot system
+    reboot:
 
   tasks:
+    # needs to also update /etc/hosts
+    # see https://gist.github.com/rothgar/8793800
     - name: Set hostname
       hostname:
         name: "{{ inventory_hostname_short }}"
       notify:
         - reboot system
+
+    - name: Generate /etc/hosts file
+      template:
+        src=hosts.j2
+        dest=/etc/hosts
 
     # TODO: create role accounts.
     - name: Create user account with sudoers
@@ -54,11 +92,15 @@
         key: "{{ lookup('file', 'certs/id_rsa.pub') }}"
         state: present
 
-    - name: Remove root SSH access
-      lineinfile: 
+    - name: Install sudo
+      apt:
+        name: sudo
+
+    - name: Allow root SSH access
+      lineinfile:
         dest: /etc/ssh/sshd_config
         regexp: "^PermitRootLogin"
-        line: "PermitRootLogin no"
+        line: "PermitRootLogin yes"
         state: present
       notify:
         - restart sshd
@@ -77,9 +119,3 @@
         upgrade: dist
       notify:
         - reboot system
-
-  handlers:
-    - name: restart sshd
-      service: name=sshd state=restarted
-    - name: reboot system
-      reboot:

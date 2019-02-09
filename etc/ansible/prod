@@ -1,6 +1,6 @@
-gauss.jhpb.org
-euler.jhpb.org
-fermat.jhpb.org
-euclid.jhpb.org
-cantor.jhpb.org
-newton.jhpb.org
+gauss.jhpb.org ansible_host=95.216.35.160
+euler.jhpb.org ansible_host=95.216.35.159
+fermat.jhpb.org ansible_host=95.216.35.158
+euclid.jhpb.org ansible_host=95.216.35.157
+cantor.jhpb.org ansible_host=95.216.35.156
+newton.jhpb.org ansible_host=95.216.35.155
