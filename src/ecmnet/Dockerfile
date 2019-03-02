@@ -34,10 +34,11 @@ RUN mkdir -p /pkg/ecmnet/bin && \
 
 RUN useradd -d /home/ecmnet -m -p '*' ecmnet
 
-COPY --chown=ecmnet:ecmnet \
-	database.ini ecmserver.b1 ecmserver.ini ecmclient.ini \
-	input \
-	/home/ecmnet/
+COPY --chown=ecmnet:ecmnet database.ini /home/ecmnet/
+COPY --chown=ecmnet:ecmnet ecmserver.b1 /home/ecmnet/
+COPY --chown=ecmnet:ecmnet ecmserver.ini /home/ecmnet/
+COPY --chown=ecmnet:ecmnet ecmclient.ini /home/ecmnet/
+COPY --chown=ecmnet:ecmnet input /home/ecmnet/
 
 USER ecmnet
 WORKDIR /home/ecmnet
