@@ -1,3 +1,4 @@
+[jhpb]
 gauss.jhpb.org ansible_host=95.216.35.160
 euler.jhpb.org ansible_host=95.216.35.159
 fermat.jhpb.org ansible_host=95.216.35.158
