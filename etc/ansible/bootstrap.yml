@@ -125,16 +125,3 @@
         upgrade: dist
       notify:
         - reboot system
-
-    - name: Disable rpcbind
-      systemd:
-        name: rpcbind
-        state: stopped
-        enabled: no
-        masked: yes
-
-    - name: Disable rpcbind.socket
-      systemd:
-        name: rpcbind.socket
-        state: stopped
-        enabled: no
