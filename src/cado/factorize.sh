@@ -1,6 +1,6 @@
 #!/bin/bash
 
-NUM_CORES=7
+NUM_CORES=$(nproc)
 NET_NAME=cado-net
 
 BITS=300
