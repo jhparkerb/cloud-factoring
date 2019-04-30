@@ -34,8 +34,8 @@ RUN hg clone https://gmplib.org/repo/gmp/ gmp
 WORKDIR gmp
 
 RUN ./.bootstrap && \
-	CFLAGS="-static -std=c99 -O3 -Ofast -W -Wall" \
-	LDFLAGS="-s" \
+	CFLAGS="-static -std=c99 -Ofast -march=native -W -Wall" \
+	LDFLAGS="-static" \
 	./configure --enable-static --prefix=/pkg/gmp &&  \
 	make -j$(nproc) install
 
@@ -48,8 +48,8 @@ WORKDIR cado-nfs
 RUN make -j$(nproc) install \
 	CADO_NFS_STATIC=1 \
 	G2FX_CONFIGURE_EXTRA_FLAGS="--disable-shared" \
-	CFLAGS="-static -std=c99 -O3 -Ofast -W -Wall" \
-	CXXFLAGS="-static -std=c++11 -O3 -Ofast -W -Wall" \
+	CFLAGS="-static -std=c99 -Ofast -march=native -W -Wall" \
+	CXXFLAGS="-static -std=c++11 -Ofast -march=native -W -Wall" \
 	LDFLAGS="-static" \
 	PREFIX="/pkg/cado" \
 	GMP="/pkg/gmp"
