@@ -3,7 +3,7 @@
 NUM_CORES=$(nproc)
 NET_NAME=cado-net
 
-BITS=300
+BITS=400
 P=$(openssl prime -generate -safe -bits $(($BITS/2 + 1)))
 Q=$(openssl prime -generate -safe -bits $(($BITS/2 + 1)))
 N=$(echo $P \* $Q | BC_LINE_LENGTH=1000 bc)
@@ -15,27 +15,26 @@ yes | docker container prune -f
 docker network rm ${NET_NAME} || true
 docker network create ${NET_NAME}
 
-docker volume rm -f work
-
 for num in $(seq 1 $NUM_CORES)
 do
 	docker run \
 		--network ${NET_NAME} \
-		--cpus=1 \
+		--cpus=1.0 \
 		--name=client-${num} \
+		-v ${HOME}/work:/home/cado \
 		-d \
 		cado \
 			/pkg/cado/bin/cado-nfs-client.py \
-				--workdir=. \
+				--workdir=/home/cado/client-${num} \
 				--bindir=/pkg/cado/lib/cado-nfs-3.0.0 \
-				--server=http://dist:4242/
+				--server=http://dist:4242/ &
 done
 
 docker run \
 	--network ${NET_NAME} \
 	--cpus=${NUM_CORES}.0 \
 	--name=dist \
-	--mount=type=volume,source=work,target=/home/cado \
+	-v ${HOME}/work:/home/cado \
 	cado \
 		/pkg/cado/bin/cado-nfs.py \
 			--server \
@@ -50,19 +49,17 @@ docker run \
 
 for num in $(seq 1 $NUM_CORES)
 do
-	docker rm -f client-${num}
+	docker rm -f client-${num} &
 done
 
 docker run \
 	--network ${NET_NAME} \
 	--cpus=${NUM_CORES}.0 \
 	--name=local \
-	--mount=type=volume,source=work,target=/home/cado \
+	-v ${HOME}/work:/home/cado \
 	cado \
 		/pkg/cado/bin/cado-nfs.py \
+			--server \
 			-t all \
 			--workdir=/home/cado \
-			server.port=4242 \
-			server.ssl=no \
-			server.whitelist=0.0.0.0/0 \
 			$N
