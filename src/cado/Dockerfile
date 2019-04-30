@@ -37,7 +37,7 @@ RUN ./.bootstrap && \
 	CFLAGS="-static -std=c99 -O3 -Ofast -W -Wall" \
 	LDFLAGS="-s" \
 	./configure --enable-static --prefix=/pkg/gmp &&  \
-	make -j8 install
+	make -j$(nproc) install
 
 WORKDIR ..
 
@@ -45,10 +45,12 @@ RUN git clone https://scm.gforge.inria.fr/anonscm/git/cado-nfs/cado-nfs.git
 
 WORKDIR cado-nfs
 
-RUN make -j8 install \
+RUN make -j$(nproc) install \
+	CADO_NFS_STATIC=1 \
+	G2FX_CONFIGURE_EXTRA_FLAGS="--disable-shared" \
 	CFLAGS="-static -std=c99 -O3 -Ofast -W -Wall" \
 	CXXFLAGS="-static -std=c++11 -O3 -Ofast -W -Wall" \
-	LDFLAGS="-s" \
+	LDFLAGS="-static" \
 	PREFIX="/pkg/cado" \
 	GMP="/pkg/gmp"
 
@@ -83,3 +85,6 @@ RUN apk update && \
 	cp /usr/share/zoneinfo/US/Eastern /etc/localtime && \
 	apk del tzdata && \
 	adduser -D cado
+
+USER cado
+WORKDIR /home/cado
