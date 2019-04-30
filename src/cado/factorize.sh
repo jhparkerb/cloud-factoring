@@ -47,11 +47,6 @@ docker run \
 			tasks.linalg.run=false \
 			$N
 
-for num in $(seq 1 $NUM_CORES)
-do
-	docker rm -f client-${num} &
-done
-
 docker run \
 	--network ${NET_NAME} \
 	--cpus=${NUM_CORES}.0 \
@@ -63,3 +58,8 @@ docker run \
 			-t all \
 			--workdir=/home/cado \
 			$N
+
+for num in $(seq 1 $NUM_CORES)
+do
+	docker rm -f client-${num} > /dev/null
+done
