@@ -1,45 +1,6 @@
-# Build cado-nfs from source and install it into /pkg/cado.
-FROM debian:buster-slim AS buildenv
+FROM build as build_cado
 
-# Tell debconf to run in non-interactive mode
-ENV DEBIAN_FRONTEND noninteractive
-
-ENV DEPS ' \
-	autoconf \
-	automake \
-	binutils \
-	bison \
-	ca-certificates \
-	clang \
-	cmake \
-	dpkg-dev \
-	git \
-	libtool \
-	make \
-	mercurial \
-	python \
-	python3 \
-	rsync \
-	ssh \
-	subversion \
-	texinfo \
-	'
-
-RUN apt-get update && apt-get install -y \
-	$DEPS \
-	--no-install-recommends
-
-RUN hg clone https://gmplib.org/repo/gmp/ gmp
-
-WORKDIR gmp
-
-RUN ./.bootstrap && \
-	CFLAGS="-static -std=c99 -Ofast -march=native -W -Wall" \
-	LDFLAGS="-static" \
-	./configure --enable-static --prefix=/pkg/gmp &&  \
-	make -j$(nproc) install
-
-WORKDIR ..
+COPY --from=gmp /pkg/gmp /pkg/gmp
 
 RUN git clone https://scm.gforge.inria.fr/anonscm/git/cado-nfs/cado-nfs.git
 
@@ -54,14 +15,16 @@ RUN make -j$(nproc) install \
 	PREFIX="/pkg/cado" \
 	GMP="/pkg/gmp"
 
-FROM alpine:latest as cado-build
-COPY --from=buildenv /pkg /pkg
+FROM scratch as pkg_cado
+COPY --from=build_cado /pkg/cado /pkg/cado
 
+FROM alpine:latest as cado
+COPY --from=gmp /pkg/gmp /pkg/gmp
+COPY --from=pkg_cado /pkg/cado /pkg/cado
 
 # Take an image that has cado-nfs installed in /pkg and configure it to remove
 # unncessary packages, install supporting software not necessarily needed to
 # build, and set up a cado user account to run the client and server.
-FROM cado-build as cado
 
 ENV DEPS ' \
 	bind-tools \
