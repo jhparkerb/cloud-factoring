@@ -13,7 +13,9 @@ ENV DEPS ' \
 	cmake \
 	curl \
 	dpkg-dev \
+	g++ \
 	git \
+	libcurl4-openssl-dev \
 	libtool \
 	make \
 	mercurial \
@@ -23,6 +25,7 @@ ENV DEPS ' \
 	ssh \
 	subversion \
 	texinfo \
+	unzip \
 	'
 
 RUN apt-get update && \
