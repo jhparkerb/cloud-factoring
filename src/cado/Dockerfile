@@ -9,8 +9,8 @@ WORKDIR cado-nfs
 RUN make -j$(nproc) install \
 	CADO_NFS_STATIC=1 \
 	G2FX_CONFIGURE_EXTRA_FLAGS="--disable-shared" \
-	CFLAGS="-static -std=c99 -Ofast -march=native -W -Wall" \
-	CXXFLAGS="-static -std=c++11 -Ofast -march=native -W -Wall" \
+	CFLAGS="-static -Ofast -march=native -W -Wall" \
+	CXXFLAGS="-static -Ofast -march=native -W -Wall" \
 	LDFLAGS="-static" \
 	PREFIX="/pkg/cado" \
 	GMP="/pkg/gmp"
