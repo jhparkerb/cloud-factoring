@@ -43,17 +43,18 @@ docker run \
 			server.ssl=no \
 			server.whitelist=0.0.0.0/0 \
 			tasks.linalg.run=false \
+			tasks.maxtimedout=200 \
+			tasks.wutimeout=86500 \
 			$N
 
 docker run \
 	--network ${NET_NAME} \
-	--cpus=${NUM_CORES}.0 \
+	--cpus=$((${NUM_CORES} / 2)).0 \
 	--name=local \
 	-v ${HOME}/work:/home/cado \
 	cado \
 		/pkg/cado/bin/cado-nfs.py \
 			--server \
-			-t all \
 			--workdir=/home/cado/${NAME} \
 			$N
 
