@@ -3,9 +3,6 @@ FROM build as build_ecm
 # install gmp
 COPY --from=gmp /pkg/gmp /pkg/gmp
 
-# install gwnum
-COPY --from=gwnum /pkg/gwnum /pkg/gwnum
-
 # RUN svn checkout https://svn.code.sf.net/p/openpfgw/code/ openpfgw
 COPY ecm-7.0.4.tar.gz .
 
@@ -16,7 +13,7 @@ WORKDIR ecm-7.0.4
 # configure and build CFLAGS and LDFLAGS courtesy
 # https://stackoverflow.com/questions/20068947/
 # 	how-to-static-link-linux-software-that-uses-configure
-RUN ./configure CFLAGS='-static' --prefix=/pkg/ecm \
+RUN ./configure CFLAGS='-static -Ofast -march=native' --prefix=/pkg/ecm \
 		--with-gmp=/pkg/gmp \
 		--enable-static && \
 	make LDFLAGS='-all-static' && \
