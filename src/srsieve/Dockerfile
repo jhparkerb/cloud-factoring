@@ -1,14 +1,12 @@
 FROM build as build_srsieve
 
-COPY sr2sieve-2.0.0.7z .
-RUN 7z x sr2sieve-2.0.0.7z
+COPY srsieve-0.6.17-src.zip .
+RUN unzip srsieve-0.6.17-src.zip
 
-WORKDIR sr2sieve_2.0.0
-
-RUN make CFLAGS='-march=native -Ofast' LDFLAGS='-static'
+RUN make LDFLAGS='-static'
 
 FROM scratch as pkg_srsieve
-COPY --from=build_srsieve /home/build/sr2sieve_2.0.0/sr2sieve /pkg/srsieve/bin/sr2sieve
+COPY --from=build_srsieve /home/build/srsieve /pkg/srsieve/bin/srsieve
 
 FROM alpine:latest as srsieve
 COPY --from=pkg_srsieve /pkg/srsieve /pkg/srsieve

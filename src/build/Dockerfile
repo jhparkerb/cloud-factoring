@@ -19,7 +19,6 @@ ENV DEPS ' \
 	libtool \
 	make \
 	mercurial \
-	p7zip-full \
 	python \
 	python3 \
 	rsync \
