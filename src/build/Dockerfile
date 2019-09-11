@@ -26,6 +26,7 @@ ENV DEPS ' \
 	subversion \
 	texinfo \
 	unzip \
+	zlib1g-dev \
 	'
 
 RUN apt-get update && \
