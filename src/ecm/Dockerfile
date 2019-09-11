@@ -17,13 +17,11 @@ RUN ./configure CFLAGS='-static -Ofast -march=native' --prefix=/pkg/ecm \
 		--with-gmp=/pkg/gmp \
 		--enable-static && \
 	make LDFLAGS='-all-static' && \
+	make ecm-params && \
+	make && \
 	make install
 
 RUN cp ecmfactor /pkg/ecm/bin
-
-### insert before `make install` when the build system is less loaded
-#	make ecm-params && \
-#	make && \
 
 FROM scratch as pkg_ecm
 COPY --from=build_ecm /pkg/ecm /pkg/ecm
