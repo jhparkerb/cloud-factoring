@@ -10,6 +10,7 @@ WORKDIR cado-nfs
 RUN make -j$(nproc) install \
 	CADO_NFS_STATIC=1 \
 	G2FX_CONFIGURE_EXTRA_FLAGS="--disable-shared" \
+	FLAGS_SIZE="-DSIZEOF_P_R_VALUES=8 -DSIZEOF_INDEX=8" \
 	CFLAGS="-static -Ofast -march=native -W -Wall" \
 	CXXFLAGS="-static -Ofast -march=native -W -Wall" \
 	LDFLAGS="-static" \
