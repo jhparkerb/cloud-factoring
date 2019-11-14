@@ -10,17 +10,17 @@ RUN git clone https://scm.gforge.inria.fr/anonscm/git/cado-nfs/cado-nfs.git
 WORKDIR cado-nfs
 
 RUN make -j$(nproc) install \
-	CADO_NFS_STATIC=1 \
-	G2FX_CONFIGURE_EXTRA_FLAGS="--disable-shared" \
-	FLAGS_SIZE="-DSIZEOF_P_R_VALUES=8 -DSIZEOF_INDEX=8" \
-	CFLAGS="-static -Ofast -march=native -W -Wall -DNDEBUG" \
-	CXXFLAGS="-static -Ofast -march=native -W -Wall -DNDEBUG" \
-	LDFLAGS="-static" \
-	GMPECM="/pkg/ecm" \
-	GMP="/pkg/gmp" \
-	HWLOC="/pkg/hwlock" \
-	MPI="/pkg/openmpi" \
-	PREFIX="/pkg/cado"
+  CADO_NFS_STATIC=1 \
+  G2FX_CONFIGURE_EXTRA_FLAGS="--disable-shared" \
+  FLAGS_SIZE="-DSIZEOF_P_R_VALUES=8 -DSIZEOF_INDEX=8" \
+  CFLAGS="-static -Ofast -march=native -W -Wall -DNDEBUG" \
+  CXXFLAGS="-static -Ofast -march=native -W -Wall -DNDEBUG" \
+  LDFLAGS="-static" \
+  GMPECM="/pkg/ecm" \
+  GMP="/pkg/gmp" \
+  HWLOC="/pkg/hwlock" \
+  MPI="/pkg/openmpi" \
+  PREFIX="/pkg/cado"
 
 FROM scratch as pkg_cado
 COPY --from=build_cado /pkg/cado /pkg/cado
@@ -37,28 +37,28 @@ COPY --from=pkg_cado /pkg/cado /pkg/cado
 # build, and set up a cado user account to run the client and server.
 
 ENV DEPS ' \
-	bind-tools \
-	curl \
-	gzip \
-	openssl \
-	openssh \
-	perl \
-	python \
-	python3 \
-	tzdata \
-	'
+  bind-tools \
+  curl \
+  gzip \
+  openssl \
+  openssh \
+  perl \
+  python \
+  python3 \
+  tzdata \
+  '
 
 ENV NON_ESSENTIAL ' \
-	bc \
-	less \
-	vim \
-	'
+  bc \
+  less \
+  vim \
+  '
 
 RUN apk update && \
-	apk add $DEPS && \
-	cp /usr/share/zoneinfo/US/Eastern /etc/localtime && \
-	apk del tzdata && \
-	adduser -D cado
+  apk add $DEPS && \
+  cp /usr/share/zoneinfo/US/Eastern /etc/localtime && \
+  apk del tzdata && \
+  adduser -D cado
 
 USER cado
 WORKDIR /home/cado

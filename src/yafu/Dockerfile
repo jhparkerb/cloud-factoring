@@ -34,29 +34,29 @@ COPY --from=msieve /pkg/msieve /pkg/msieve
 COPY --from=ggnfs /pkg/ggnfs /pkg/ggnfs
 
 ENV DEPS ' \
-	bind-tools \
-	curl \
-	gzip \
-	openssl \
-	perl \
-	python \
-	python3 \
-	tzdata \
-	zlib \
-	'
+  bind-tools \
+  curl \
+  gzip \
+  openssl \
+  perl \
+  python \
+  python3 \
+  tzdata \
+  zlib \
+  '
 
 ENV NON_ESSENTIAL ' \
-	bc \
-	less \
-	vim \
-	'
+  bc \
+  less \
+  vim \
+  '
 
 RUN apk update && \
-	apk add $DEPS && \
-	apk add $NON_ESSENTIAL && \
-	cp /usr/share/zoneinfo/US/Eastern /etc/localtime && \
-	apk del tzdata && \
-	adduser -D yafu
+  apk add $DEPS && \
+  apk add $NON_ESSENTIAL && \
+  cp /usr/share/zoneinfo/US/Eastern /etc/localtime && \
+  apk del tzdata && \
+  adduser -D yafu
 
 USER yafu
 WORKDIR /home/yafu

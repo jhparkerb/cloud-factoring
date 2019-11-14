@@ -6,7 +6,7 @@ COPY --chown=build:build llr38nsrc.zip .
 
 # The contents of the zipfile are misnamed!
 RUN unzip llr38nsrc.zip && \
-	mv llr38nrsc llr38nsrc
+  mv llr38nrsc llr38nsrc
 
 WORKDIR llr38nsrc/linux64llr
 

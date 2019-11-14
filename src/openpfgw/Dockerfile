@@ -8,7 +8,7 @@ COPY --from=gwnum /pkg/gwnum /pkg/gwnum
 
 # RUN svn checkout https://svn.code.sf.net/p/openpfgw/code/ openpfgw
 RUN curl -L -O 'https://sourceforge.net/code-snapshots/svn/o/op/openpfgw/code/openpfgw-code-r646.zip' && \
-	unzip openpfgw-code-r646.zip
+  unzip openpfgw-code-r646.zip
 
 WORKDIR openpfgw-code-r646
 
@@ -26,28 +26,28 @@ FROM alpine:latest as openpfgw
 COPY --from=pkg_openpfgw /pkg/openpfgw /pkg/openpfgw
 
 ENV DEPS ' \
-	bind-tools \
-	curl \
-	gzip \
-	openssl \
-	perl \
-	python \
-	python3 \
-	tzdata \
-	'
+  bind-tools \
+  curl \
+  gzip \
+  openssl \
+  perl \
+  python \
+  python3 \
+  tzdata \
+  '
 
 ENV NON_ESSENTIAL ' \
-	bc \
-	less \
-	vim \
-	'
+  bc \
+  less \
+  vim \
+  '
 
 RUN apk update && \
-	apk add $DEPS && \
-	apk add $NON_ESSENTIAL && \
-	cp /usr/share/zoneinfo/US/Eastern /etc/localtime && \
-	apk del tzdata && \
-	adduser -D openpfgw
+  apk add $DEPS && \
+  apk add $NON_ESSENTIAL && \
+  cp /usr/share/zoneinfo/US/Eastern /etc/localtime && \
+  apk del tzdata && \
+  adduser -D openpfgw
 
 USER openpfgw
 WORKDIR /home/openpfgw
