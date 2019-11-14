@@ -1,6 +1,9 @@
 FROM build as build_cado
 
 COPY --from=gmp /pkg/gmp /pkg/gmp
+COPY --from=ecm /pkg/ecm /pkg/ecm
+COPY --from=openmpi /pkg/openmpi /pkg/openmpi
+COPY --from=hwloc /pkg/hwloc /pkg/hwloc
 
 RUN git clone https://scm.gforge.inria.fr/anonscm/git/cado-nfs/cado-nfs.git
 
@@ -13,13 +16,19 @@ RUN make -j$(nproc) install \
 	CXXFLAGS="-static -Ofast -march=native -W -Wall" \
 	LDFLAGS="-static" \
 	PREFIX="/pkg/cado" \
-	GMP="/pkg/gmp"
+	GMP="/pkg/gmp" \
+	MPI="/pkg/openmpi" \
+	HWLOC="/pkg/hwlock" \
+	ECM="/pkg/ecm"
 
 FROM scratch as pkg_cado
 COPY --from=build_cado /pkg/cado /pkg/cado
 
 FROM alpine:latest as cado
 COPY --from=gmp /pkg/gmp /pkg/gmp
+COPY --from=ecm /pkg/ecm /pkg/ecm
+COPY --from=openmpi /pkg/openmpi /pkg/openmpi
+COPY --from=hwloc /pkg/hwloc /pkg/hwloc
 COPY --from=pkg_cado /pkg/cado /pkg/cado
 
 # Take an image that has cado-nfs installed in /pkg and configure it to remove
@@ -31,6 +40,7 @@ ENV DEPS ' \
 	curl \
 	gzip \
 	openssl \
+	openssh \
 	perl \
 	python \
 	python3 \

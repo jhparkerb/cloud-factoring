@@ -9,13 +9,13 @@ RUN curl -L -O 'https://download.open-mpi.org/release/hwloc/v2.1/hwloc-2.1.0.tar
 WORKDIR hwloc-2.1.0
 
 RUN ./configure --prefix=/pkg/hwloc \
-		--disable-dlopen \
-		--enable-shared=no \
-		--enable-static=yes \
-		CFLAGS='-Ofast -march=native' \
-		CXXFLAGS='-Ofast -march=native' && \
-	make -s -j$(nproc) all && \
-	make -s install
+    --disable-dlopen \
+    --enable-shared=no \
+    --enable-static=yes \
+    CFLAGS='-Ofast -march=native' \
+    CXXFLAGS='-Ofast -march=native' && \
+  make -s -j$(nproc) all LDFLAGS='-all-static -lpthread' && \
+  make -s install
 
 FROM scratch as pkg_hwloc
 COPY --from=build_hwloc /pkg/hwloc /pkg/hwloc
