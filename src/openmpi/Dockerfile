@@ -1,25 +1,28 @@
-FROM build as build_ompi
+FROM build as build_openmpi
 
 USER root
 RUN apt-get -y install flex
 USER build
 
-RUN git clone -b v4.0.1 https://github.com/open-mpi/ompi.git
+COPY --from=hwloc /pkg/hwloc /pkg/hwloc
 
-WORKDIR ompi
+RUN curl -L -O 'https://download.open-mpi.org/release/open-mpi/v4.0/openmpi-4.0.2.tar.bz2' && tar xf openmpi-4.0.2.tar.bz2
 
-RUN ./autogen.pl && \
-	./configure --prefix=/pkg/ompi \
-		--disable-dlopen \
-		--enable-shared=no \
-		--enable-static=yes \
-		CFLAGS='-Ofast -march=native' \
-		CXXFLAGS='-Ofast -march=native' && \
-	make -s -j$(nproc) all && \
-	make -s install
+WORKDIR openmpi-4.0.2
 
-FROM scratch as pkg_ompi
-COPY --from=build_ompi /pkg/ompi /pkg/ompi
+RUN ./configure --prefix=/pkg/openmpi \
+    --disable-dlopen \
+    --enable-shared=no \
+    --enable-static=yes \
+    --with-hwloc=/pkg/hwloc \
+    CFLAGS='-Ofast -march=native' \
+    CXXFLAGS='-Ofast -march=native' \
+    && \
+  make -s -j$(nproc) all LDFLAGS='-all-static' && \
+  make -s install
 
-FROM alpine:latest as ompi
-COPY --from=pkg_ompi /pkg/ompi /pkg/ompi
+FROM scratch as pkg_openmpi
+COPY --from=build_openmpi /pkg/openmpi /pkg/openmpi
+
+FROM alpine:latest as openmpi
+COPY --from=pkg_openmpi /pkg/openmpi /pkg/openmpi

@@ -2,6 +2,8 @@ FROM build as build_cado
 
 COPY --from=gmp /pkg/gmp /pkg/gmp
 COPY --from=ecm /pkg/ecm /pkg/ecm
+COPY --from=openmpi /pkg/openmpi /pkg/openmpi
+COPY --from=hwloc /pkg/hwloc /pkg/hwloc
 
 RUN git clone https://scm.gforge.inria.fr/anonscm/git/cado-nfs/cado-nfs.git
 
@@ -11,20 +13,23 @@ RUN make -j$(nproc) install \
 	CADO_NFS_STATIC=1 \
 	G2FX_CONFIGURE_EXTRA_FLAGS="--disable-shared" \
 	FLAGS_SIZE="-DSIZEOF_P_R_VALUES=8 -DSIZEOF_INDEX=8" \
-	CFLAGS="-static -Ofast -march=native -W -Wall" \
-	CXXFLAGS="-static -Ofast -march=native -W -Wall" \
+	CFLAGS="-static -Ofast -march=native -W -Wall -DNDEBUG" \
+	CXXFLAGS="-static -Ofast -march=native -W -Wall -DNDEBUG" \
 	LDFLAGS="-static" \
-	PREFIX="/pkg/cado" \
-	GMP_ECM="/pkg/ecm" \
-	GMP="/pkg/gmp" && \
-	cp build/*/polyselect/polyselect3 /pkg/cado/lib/cado-nfs-3.0.0/polyselect
+	GMPECM="/pkg/ecm" \
+	GMP="/pkg/gmp" \
+	HWLOC="/pkg/hwlock" \
+	MPI="/pkg/openmpi" \
+	PREFIX="/pkg/cado"
 
 FROM scratch as pkg_cado
 COPY --from=build_cado /pkg/cado /pkg/cado
 
 FROM alpine:latest as cado
-COPY --from=gmp /pkg/gmp /pkg/gmp
 COPY --from=ecm /pkg/ecm /pkg/ecm
+COPY --from=gmp /pkg/gmp /pkg/gmp
+COPY --from=hwloc /pkg/hwloc /pkg/hwloc
+COPY --from=openmpi /pkg/openmpi /pkg/openmpi
 COPY --from=pkg_cado /pkg/cado /pkg/cado
 
 # Take an image that has cado-nfs installed in /pkg and configure it to remove
@@ -36,6 +41,7 @@ ENV DEPS ' \
 	curl \
 	gzip \
 	openssl \
+	openssh \
 	perl \
 	python \
 	python3 \
