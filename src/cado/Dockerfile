@@ -18,7 +18,7 @@ RUN make -j$(nproc) install \
   LDFLAGS="-static" \
   GMPECM="/pkg/ecm" \
   GMP="/pkg/gmp" \
-  HWLOC="/pkg/hwlock" \
+  HWLOC="/pkg/hwloc" \
   MPI="/pkg/openmpi" \
   PREFIX="/pkg/cado"
 
