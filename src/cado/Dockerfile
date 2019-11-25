@@ -1,10 +1,10 @@
 ### set up build environment
 FROM debian:testing-slim as build
 
-# Tell debconf to run in non-interactive mode
+### tell debconf to run in non-interactive mode
 ENV DEBIAN_FRONTEND noninteractive
 
-ENV DEPS ' \
+ENV DEPS " \
   autoconf \
   automake \
   binutils \
@@ -14,6 +14,7 @@ ENV DEPS ' \
   cmake \
   curl \
   dpkg-dev \
+  flex \
   g++ \
   git \
   libcurl4-openssl-dev \
@@ -28,11 +29,12 @@ ENV DEPS ' \
   texinfo \
   unzip \
   zlib1g-dev \
-  '
+  "
 
-RUN apt-get update && \
+RUN apt-get -y update && \
   apt-get install -y --no-install-recommends \
-		$DEPS && \
+    $DEPS \
+    && \
   useradd -m build
 
 RUN mkdir -p /pkg
@@ -42,41 +44,30 @@ USER build
 WORKDIR /home/build
 
 ### install HWLoc
-USER root
-RUN apt-get -y install flex
-USER build
-
-# RUN curl -L -O 'https://download.open-mpi.org/release/hwloc/v2.1/hwloc-2.1.0.tar.bz2' && tar xf hwloc-2.1.0.tar.bz2
-
-# WORKDIR hwloc-2.1.0
-
-RUN curl -L -O 'https://download.open-mpi.org/release/hwloc/v1.11/hwloc-1.11.13.tar.bz2' && tar xf hwloc-1.11.13.tar.bz2
+RUN curl -L -O "https://download.open-mpi.org/release/hwloc/v1.11/hwloc-1.11.13.tar.bz2" && tar xf hwloc-1.11.13.tar.bz2
 
 WORKDIR hwloc-1.11.13
 
-RUN ./configure --prefix=/pkg \
-    CFLAGS='-Ofast -march=native' \
-    CXXFLAGS='-Ofast -march=native' && \
+RUN ./configure \
+    --prefix=/pkg \
+    CFLAGS="-Ofast -march=native" \
+    CXXFLAGS="-Ofast -march=native" \
+    && \
   make -s -j$(nproc) all && \
   make -s install
 
 WORKDIR ..
 
 ### install OpenMPI
-USER root
-RUN apt-get -y install flex
-USER build
-
-COPY --from=hwloc /pkg/hwloc /pkg/hwloc
-
-RUN curl -L -O 'https://download.open-mpi.org/release/open-mpi/v4.0/openmpi-4.0.2.tar.bz2' && tar xf openmpi-4.0.2.tar.bz2
+RUN curl -L -O "https://download.open-mpi.org/release/open-mpi/v4.0/openmpi-4.0.2.tar.bz2" && tar xf openmpi-4.0.2.tar.bz2
 
 WORKDIR openmpi-4.0.2
 
-RUN ./configure --prefix=/pkg \
+RUN ./configure \
+    --prefix=/pkg \
     --with-hwloc=/pkg \
-    CFLAGS='-Ofast -march=native' \
-    CXXFLAGS='-Ofast -march=native' \
+    CFLAGS="-Ofast -march=native" \
+    CXXFLAGS="-Ofast -march=native" \
     && \
   make -s -j$(nproc) all && \
   make -s install
@@ -84,35 +75,39 @@ RUN ./configure --prefix=/pkg \
 WORKDIR ..
 
 ### install GMP
-RUN curl -L -O 'https://ftp.gnu.org/gnu/gmp/gmp-6.1.2.tar.bz2' && \
+RUN curl -L -O "https://ftp.gnu.org/gnu/gmp/gmp-6.1.2.tar.bz2" && \
   tar jxf gmp-6.1.2.tar.bz2
 
 WORKDIR gmp-6.1.2
 
 # TODO:  are the std flags really required or useful?
-RUN CFLAGS="-std=c99 -Ofast -march=native -W -Wall" \
-  CXXFLAGS="-std=c++11 -Ofast -march=native -W -Wall" \
-  ./configure \
+RUN ./configure \
+    --prefix=/pkg \
     --enable-cxx \
-    --prefix=/pkg &&  \
-  make -j$(nproc) install
+    CFLAGS="-std=c99 -Ofast -march=native -W -Wall" \
+    CXXFLAGS="-std=c++11 -Ofast -march=native -W -Wall" \
+    && \
+  make -s -j$(nproc) install
 
 WORKDIR ..
 
 ### install GMP-ECM
 RUN svn checkout svn://scm.gforge.inria.fr/svnroot/ecm/trunk ecm
-# COPY ecm-7.0.4.tar.gz .
 
 WORKDIR ecm
 
-RUN autoreconf -i && \
-  ./configure CFLAGS='-Ofast -march=native' --prefix=/pkg \
+RUN autoreconf -i \
+    && \
+  ./configure \
+    --prefix=/pkg \
     --with-gmp=/pkg \
-    --with-openmpi=/pkg && \
-  make && \
-  make ecm-params && \
-  make && \
-  make install
+    --with-openmpi=/pkg \
+    CFLAGS="-Ofast -march=native" \
+    && \
+  make -s && \
+  make -s ecm-params && \
+  make -s && \
+  make -s install
 
 WORKDIR ..
 
@@ -120,45 +115,44 @@ RUN git clone https://scm.gforge.inria.fr/anonscm/git/cado-nfs/cado-nfs.git
 
 WORKDIR cado-nfs
 
-RUN make -j$(nproc) install \
+RUN make -s -j$(nproc) install \
   FLAGS_SIZE="-DSIZEOF_P_R_VALUES=8 -DSIZEOF_INDEX=8" \
   CFLAGS="-Ofast -march=native -W -Wall -DNDEBUG" \
   CXXFLAGS="-Ofast -march=native -W -Wall -DNDEBUG" \
-  GMPECM="/pkg" \
   GMP="/pkg" \
+  GMPECM="/pkg" \
   HWLOC="/pkg" \
   MPI="/pkg" \
   PREFIX="/pkg"
 
+### set up final container
 FROM debian:testing-slim as cado
 COPY --from=build /pkg /pkg
 
-# Take an image that has cado-nfs installed in /pkg and configure it to remove
-# unncessary packages, install supporting software not necessarily needed to
-# build, and set up a cado user account to run the client and server.
-
-ENV DEPS ' \
+ENV DEPS " \
   curl \
   gzip \
   libgomp1 \
   openssl \
-  ssh \
   perl \
   python \
   python3 \
+  ssh \
   tzdata \
-  '
+  "
 
-ENV NON_ESSENTIAL ' \
+ENV NONESSENTIAL " \
   bc \
   less \
   vim \
-  '
+  "
 
 RUN apt-get -y update && \
   apt-get -y --no-install-recommends install \
-		$DEPS $NON_ESSENTIAL && \
+    $DEPS $NONESSENTIAL && \
   useradd -m cado
 
 USER cado
+ENV LD_LIBRARY_PATH /pkg/lib
+ENV TZ "US/Eastern"
 WORKDIR /home/cado
