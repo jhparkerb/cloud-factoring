@@ -28,6 +28,7 @@ ENV DEPS " \
   subversion \
   texinfo \
   unzip \
+  vim-tiny \
   zlib1g-dev \
   "
 
