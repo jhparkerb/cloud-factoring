@@ -92,26 +92,6 @@ RUN ./configure \
 
 WORKDIR ..
 
-### install GMP-ECM
-RUN svn checkout svn://scm.gforge.inria.fr/svnroot/ecm/trunk ecm
-
-WORKDIR ecm
-
-RUN autoreconf -i \
-    && \
-  ./configure \
-    --prefix=/pkg \
-    --with-gmp=/pkg \
-    --with-openmpi=/pkg \
-    CFLAGS="-Ofast -march=native" \
-    && \
-  make -s && \
-  make -s ecm-params && \
-  make -s && \
-  make -s install
-
-WORKDIR ..
-
 RUN git clone https://scm.gforge.inria.fr/anonscm/git/cado-nfs/cado-nfs.git
 
 WORKDIR cado-nfs
@@ -121,7 +101,6 @@ RUN make -s -j$(nproc) install \
   CFLAGS="-Ofast -march=native -W -Wall -DNDEBUG" \
   CXXFLAGS="-Ofast -march=native -W -Wall -DNDEBUG" \
   GMP="/pkg" \
-  GMPECM="/pkg" \
   HWLOC="/pkg" \
   MPI="/pkg" \
   PREFIX="/pkg"
