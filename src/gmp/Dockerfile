@@ -1,9 +1,9 @@
 FROM build as build_gmp
 
-RUN curl -L -O 'https://ftp.gnu.org/gnu/gmp/gmp-6.1.2.tar.bz2' && \
-  tar jxf gmp-6.1.2.tar.bz2
+RUN curl -L -O 'https://ftp.gnu.org/gnu/gmp/gmp-6.2.0.tar.bz2' && \
+  tar jxf gmp-6.2.0.tar.bz2
 
-WORKDIR gmp-6.1.2
+WORKDIR gmp-6.2.0
 
 # TODO:  are the std flags really required or useful?
 RUN CFLAGS="-static -std=c99 -Ofast -march=native -W -Wall" \
