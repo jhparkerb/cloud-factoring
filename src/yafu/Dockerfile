@@ -6,7 +6,7 @@ COPY --from=ecm /pkg/ecm /pkg/ecm
 COPY --from=msieve /pkg/msieve /pkg/msieve
 
 # RUN svn checkout https://svn.code.sf.net/p/openpfgw/code/ openpfgw
-RUN svn co -r 378 https://svn.code.sf.net/p/yafu/code/trunk yafu
+RUN svn co -r 381 https://svn.code.sf.net/p/yafu/code/trunk yafu
 
 COPY yafu.patch .
 
@@ -15,7 +15,7 @@ WORKDIR yafu
 # patch makefiles
 RUN patch < ../yafu.patch
 
-RUN make x86_64 NFS=1 STATIC=1
+RUN make x86_64 NFS=1 USE_SSE41=1
 
 # consider patching yafu.ini
 
@@ -47,7 +47,9 @@ ENV DEPS ' \
 
 ENV NON_ESSENTIAL ' \
   bc \
+  gdb \
   less \
+  subversion \
   vim \
   '
 
