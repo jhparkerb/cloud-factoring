@@ -1,7 +1,7 @@
 FROM build as build_gwnum
 
-RUN curl -L -O 'https://www.mersenne.org/ftp_root/gimps/p95v286.source.zip' && \
-  unzip -d mprime p95v286.source.zip || true
+RUN curl -L -O 'https://www.mersenne.org/ftp_root/gimps/p95v298b3.source.zip' && \
+  unzip -d mprime p95v298b3.source.zip || true
 
 WORKDIR mprime/gwnum
 
