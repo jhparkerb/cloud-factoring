@@ -92,7 +92,7 @@ RUN ./configure \
 
 WORKDIR ..
 
-RUN git clone https://scm.gforge.inria.fr/anonscm/git/cado-nfs/cado-nfs.git
+RUN git clone "https://gitlab.inria.fr/cado-nfs/cado-nfs.git"
 ### install cado-nfs
 
 WORKDIR cado-nfs
