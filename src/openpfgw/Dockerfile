@@ -15,7 +15,7 @@ RUN ln -s /pkg/gmp/include/gmp* packages/gmp/64bit
 RUN ln -s /pkg/gwnum/lib/gwnum.a packages/gwnum/64bit
 RUN sed -i 's/-Wl,-no_pie//g' makefile
 
-RUN make IS64=1 CFLAGS='-static -Ofast -march=native -m64 -DX86_64 -D_64BIT -I../../packages/gmp/64bit -I../../pform/primesieve' CXXFLAGS='$(CFLAGS) -I../../pfconfig/headers'
+RUN make -j$(nproc) IS64=1 LDFLAGS='--static -lpthread -ldl' CFLAGS='-Ofast -march=native -m64 -DX86_64 -D_64BIT -I../../packages/gmp/64bit -I../../pform/primesieve -lpthread' CXXFLAGS='$(CFLAGS) -I../../pfconfig/headers'
 
 FROM scratch as pkg_openpfgw
 COPY --from=build_openpfgw /home/build/openpfgw/pfgw64 /pkg/openpfgw/bin/pfgw64
@@ -27,6 +27,7 @@ ENV DEPS ' \
   bind-tools \
   curl \
   gzip \
+  libc6-compat \
   openssl \
   perl \
   python \
