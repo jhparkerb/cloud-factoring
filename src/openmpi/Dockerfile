@@ -6,9 +6,9 @@ USER build
 
 COPY --from=hwloc /pkg/hwloc /pkg/hwloc
 
-RUN curl -L -O 'https://download.open-mpi.org/release/open-mpi/v4.0/openmpi-4.0.2.tar.bz2' && tar xf openmpi-4.0.2.tar.bz2
+RUN curl -L -O 'https://download.open-mpi.org/release/open-mpi/v4.0/openmpi-4.0.3.tar.bz2' && tar xf openmpi-4.0.3.tar.bz2
 
-WORKDIR openmpi-4.0.2
+WORKDIR openmpi-4.0.3
 
 RUN ./configure --prefix=/pkg/openmpi \
     --disable-dlopen \
@@ -21,8 +21,5 @@ RUN ./configure --prefix=/pkg/openmpi \
   make -s -j$(nproc) all LDFLAGS='-all-static' && \
   make -s install
 
-FROM scratch as pkg_openmpi
+FROM scratch as openmpi
 COPY --from=build_openmpi /pkg/openmpi /pkg/openmpi
-
-FROM alpine:latest as openmpi
-COPY --from=pkg_openmpi /pkg/openmpi /pkg/openmpi

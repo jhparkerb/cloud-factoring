@@ -4,21 +4,16 @@ USER root
 RUN apt-get -y install flex
 USER build
 
-RUN curl -L -O 'https://download.open-mpi.org/release/hwloc/v2.1/hwloc-2.1.0.tar.bz2' && tar xf hwloc-2.1.0.tar.bz2
+RUN curl -L -O 'https://download.open-mpi.org/release/hwloc/v1.11/hwloc-1.11.13.tar.bz2' && tar xf hwloc-1.11.13.tar.bz2
 
-WORKDIR hwloc-2.1.0
+WORKDIR hwloc-1.11.13
 
-RUN ./configure --prefix=/pkg/hwloc \
-    --disable-dlopen \
-    --enable-shared=no \
-    --enable-static=yes \
+RUN ./configure \
+    --prefix=/pkg/hwloc \
     CFLAGS='-Ofast -march=native' \
     CXXFLAGS='-Ofast -march=native' && \
   make -s -j$(nproc) all LDFLAGS='-all-static -lpthread' && \
   make -s install
 
-FROM scratch as pkg_hwloc
+FROM scratch as hwloc
 COPY --from=build_hwloc /pkg/hwloc /pkg/hwloc
-
-FROM alpine:latest as hwloc
-COPY --from=pkg_hwloc /pkg/hwloc /pkg/hwloc
