@@ -12,28 +12,28 @@ FROM alpine:latest as srsieve
 COPY --from=pkg_srsieve /pkg/srsieve /pkg/srsieve
 
 ENV DEPS ' \
-	bind-tools \
-	curl \
-	gzip \
-	openssl \
-	perl \
-	python \
-	python3 \
-	tzdata \
-	'
+  bind-tools \
+  curl \
+  gzip \
+  openssl \
+  perl \
+  python \
+  python3 \
+  tzdata \
+  '
 
 ENV NON_ESSENTIAL ' \
-	bc \
-	less \
-	vim \
-	'
+  bc \
+  less \
+  vim \
+  '
 
 RUN apk update && \
-	apk add $DEPS && \
-	apk add $NON_ESSENTIAL && \
-	cp /usr/share/zoneinfo/US/Eastern /etc/localtime && \
-	apk del tzdata && \
-	adduser -D srsieve
+  apk add $DEPS && \
+  apk add $NON_ESSENTIAL && \
+  cp /usr/share/zoneinfo/US/Eastern /etc/localtime && \
+  apk del tzdata && \
+  adduser -D srsieve
 
 USER srsieve
 WORKDIR /home/srsieve
