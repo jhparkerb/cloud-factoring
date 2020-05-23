@@ -13,7 +13,9 @@ ENV DEPS ' \
   cmake \
   curl \
   dpkg-dev \
-  g++ \
+  flex \
+  g++-10 \
+  gcc-10 \
   git \
   libcurl4-openssl-dev \
   libtool \
@@ -26,13 +28,16 @@ ENV DEPS ' \
   subversion \
   texinfo \
   unzip \
+  vim-tiny \
   zlib1g-dev \
   '
 
-RUN apt-get update && \
-  apt-get install -y $DEPS --no-install-recommends && \
+RUN apt-get -y update && \
+  apt-get install -y --no-install-recommends $DEPS && \
+  dpkg --purge gcc g++ && \
   useradd -m build
 
+RUN gcc-10 --version | fgrep -q ' 10.'
 RUN mkdir -p /pkg
 RUN chown -R build:build /pkg
 
