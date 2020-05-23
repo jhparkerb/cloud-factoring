@@ -64,9 +64,9 @@ RUN ./configure \
 WORKDIR ..
 
 ### install OpenMPI
-RUN curl -L -O "https://download.open-mpi.org/release/open-mpi/v4.0/openmpi-4.0.2.tar.bz2" && tar xf openmpi-4.0.2.tar.bz2
+RUN curl -L -O "https://download.open-mpi.org/release/open-mpi/v4.0/openmpi-4.0.3.tar.bz2" && tar xf openmpi-4.0.3.tar.bz2
 
-WORKDIR openmpi-4.0.2
+WORKDIR openmpi-4.0.3
 
 RUN ./configure \
     --prefix=/pkg \
