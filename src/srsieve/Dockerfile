@@ -3,7 +3,7 @@ FROM build as build_srsieve
 COPY srsieve-0.6.17-src.zip .
 RUN unzip srsieve-0.6.17-src.zip
 
-RUN make LDFLAGS='-static'
+RUN make CFLAGS='-Ofast -march=native' LDFLAGS='-static'
 
 FROM scratch as pkg_srsieve
 COPY --from=build_srsieve /home/build/srsieve /pkg/srsieve/bin/srsieve

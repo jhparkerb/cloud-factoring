@@ -21,7 +21,8 @@ RUN ./configure CFLAGS='-static -Ofast -march=native' --prefix=/pkg/ecm \
   make LDFLAGS='-all-static' && \
   make ecm-params && \
   make LDFLAGS='-all-static' && \
-  make install
+  make install && \
+  cp ecmfactor /pkg/ecm/bin
 
 FROM scratch as pkg_ecm
 COPY --from=build_ecm /pkg/ecm /pkg/ecm
