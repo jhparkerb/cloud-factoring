@@ -92,11 +92,7 @@ RUN ./configure \
 
 WORKDIR ..
 
-<<<<<<< Updated upstream
-RUN git clone "https://gitlab.inria.fr/cado-nfs/cado-nfs.git"
-=======
 RUN git clone https://gitlab.inria.fr/cado-nfs/cado-nfs.git
->>>>>>> Stashed changes
 ### install cado-nfs
 
 WORKDIR cado-nfs
