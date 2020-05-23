@@ -92,10 +92,17 @@ RUN ./configure \
 
 WORKDIR ..
 
+<<<<<<< Updated upstream
 RUN git clone "https://gitlab.inria.fr/cado-nfs/cado-nfs.git"
+=======
+RUN git clone https://gitlab.inria.fr/cado-nfs/cado-nfs.git
+>>>>>>> Stashed changes
 ### install cado-nfs
 
 WORKDIR cado-nfs
+
+# a known-good commit, found at https://cado-nfs-ci.loria.fr/ci/job/master/job/compile-debian-9-amd64/lastSuccessfulBuild/
+RUN git checkout 67de595909cf4cecc9692ff767c1472972b8ca65
 
 RUN make -s -j$(nproc) install \
   FLAGS_SIZE="-DSIZEOF_P_R_VALUES=8 -DSIZEOF_INDEX=8" \
