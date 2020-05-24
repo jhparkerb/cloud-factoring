@@ -1,20 +1,17 @@
 FROM build as build_ecm
 
-# install gmp
 COPY --from=gmp /pkg/gmp /pkg/gmp
 COPY --from=openmpi /pkg/openmpi /pkg/openmpi
 
-# RUN svn checkout https://svn.code.sf.net/p/openpfgw/code/ openpfgw
-COPY ecm-7.0.4.tar.gz .
+RUN svn checkout -r 3085 https://scm.gforge.inria.fr/anonscm/svn/ecm/trunk ecm
 
-RUN tar zxf ecm-7.0.4.tar.gz
-
-WORKDIR ecm-7.0.4
+WORKDIR ecm
 
 # configure and build CFLAGS and LDFLAGS courtesy
 # https://stackoverflow.com/questions/20068947/
 #   how-to-static-link-linux-software-that-uses-configure
-RUN ./configure CFLAGS='-static -Ofast -march=native' --prefix=/pkg/ecm \
+RUN autoreconf -i && \
+  ./configure CFLAGS='-static -Ofast -march=native' --prefix=/pkg/ecm \
     --with-gmp=/pkg/gmp \
     --with-openmpi=/pkg/openmpi \
     --enable-static && \

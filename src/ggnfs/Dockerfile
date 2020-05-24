@@ -1,9 +1,7 @@
 FROM build as build_ggnfs
 
-# install gmp
 COPY --from=gmp /pkg/gmp /pkg/gmp
 
-# RUN svn checkout https://svn.code.sf.net/p/openpfgw/code/ openpfgw
 RUN curl -L -O 'https://github.com/radii/ggnfs/archive/master.zip' && \
   unzip master.zip
 
@@ -31,8 +29,8 @@ RUN make && \
   ln -s athlon64 asm && \
   make
 
-# copy asm sievers into place
 WORKDIR ../../../..
+
 RUN cp -f src/experimental/lasieve4_64/gnfs-lasieve4I* bin
 
 FROM scratch as pkg_ggnfs

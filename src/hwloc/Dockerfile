@@ -1,10 +1,8 @@
 FROM build as build_hwloc
 
-USER root
-RUN apt-get -y install flex
-USER build
-
-RUN curl -L -O 'https://download.open-mpi.org/release/hwloc/v1.11/hwloc-1.11.13.tar.bz2' && tar xf hwloc-1.11.13.tar.bz2
+RUN curl -L -O \
+  https://download.open-mpi.org/release/hwloc/v1.11/hwloc-1.11.13.tar.bz2 && \
+    tar xf hwloc-1.11.13.tar.bz2
 
 WORKDIR hwloc-1.11.13
 

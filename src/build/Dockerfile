@@ -1,6 +1,5 @@
 FROM debian:buster-slim AS build
 
-# Tell debconf to run in non-interactive mode
 ENV DEBIAN_FRONTEND noninteractive
 
 ENV DEPS ' \

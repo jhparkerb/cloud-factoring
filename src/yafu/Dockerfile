@@ -1,12 +1,10 @@
 FROM build as build_yafu
 
-# install gmp
 COPY --from=gmp /pkg/gmp /pkg/gmp
 COPY --from=ecm /pkg/ecm /pkg/ecm
 COPY --from=msieve /pkg/msieve /pkg/msieve
 
-# RUN svn checkout https://svn.code.sf.net/p/openpfgw/code/ openpfgw
-RUN svn co -r 381 https://svn.code.sf.net/p/yafu/code/trunk yafu
+RUN svn checkout -r 381 https://svn.code.sf.net/p/yafu/code/trunk yafu
 
 COPY yafu.patch .
 
@@ -19,6 +17,7 @@ RUN make x86_64 NFS=1 USE_SSE41=1
 
 # consider patching yafu.ini
 
+# fails with 'expected numeric input for option B1pm1'
 # RUN ./yafu tune
 
 FROM scratch as pkg_yafu
