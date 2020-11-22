@@ -40,6 +40,8 @@ ENV DEPS ' \
 ENV NONESSENTIAL ' \
   bc \
   less \
+  ltrace \
+  strace \
   vim \
   '
 
