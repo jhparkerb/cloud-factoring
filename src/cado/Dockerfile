@@ -11,7 +11,6 @@ WORKDIR cado-nfs
 # This is a known-good commit, found at
 # https://cado-nfs-ci.loria.fr/ci/job/master/job/compile-debian-9-amd64/lastSuccessfulBuild/
 RUN git checkout 67de595909cf4cecc9692ff767c1472972b8ca65
-#RUN git checkout 98854840d6aaa889c568523a76cce096e91b942f
 
 RUN make -s -j$(nproc) install \
   FLAGS_SIZE='-DSIZEOF_P_R_VALUES=8 -DSIZEOF_INDEX=8' \
