@@ -22,7 +22,7 @@ RUN make -s -j$(nproc) install \
   MPI='/pkg/openmpi' \
   PREFIX='/pkg/cado'
 
-FROM debian:testing-slim as cado
+FROM debian:buster as cado
 COPY --from=build /pkg /pkg
 
 ENV DEPS ' \
