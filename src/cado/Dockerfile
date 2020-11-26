@@ -4,22 +4,21 @@ COPY --from=hwloc /pkg/hwloc /pkg/hwloc
 COPY --from=openmpi /pkg/openmpi /pkg/openmpi
 COPY --from=gmp /pkg/gmp /pkg/gmp
 
-RUN git clone https://gitlab.inria.fr/cado-nfs/cado-nfs.git
+RUN git clone https://gitlab.inria.fr/cado-nfs/cado-nfs.git && \
+	cd cado-nfs && \
+	git checkout 3dc7496d1fd72bc5f0be34bc7dcbd839e41efa82
+
 
 WORKDIR cado-nfs
 
-# This is a known-good commit, found at
-# https://cado-nfs-ci.loria.fr/ci/job/master/job/compile-debian-9-amd64/lastSuccessfulBuild/
-RUN git checkout 67de595909cf4cecc9692ff767c1472972b8ca65
-
-RUN make -s -j$(nproc) install \
-  FLAGS_SIZE='-DSIZEOF_P_R_VALUES=8 -DSIZEOF_INDEX=8' \
+RUN FLAGS_SIZE='-DSIZEOF_P_R_VALUES=8 -DSIZEOF_INDEX=8' \
   CFLAGS='-Ofast -march=native -W -Wall -DNDEBUG' \
   CXXFLAGS='-Ofast -march=native -W -Wall -DNDEBUG' \
   GMP='/pkg/gmp' \
   HWLOC='/pkg/hwloc' \
   MPI='/pkg/openmpi' \
-  PREFIX='/pkg/cado'
+  PREFIX='/pkg/cado' \
+	make -s -j$(nproc) install
 
 FROM debian:buster as cado
 COPY --from=build /pkg /pkg
