@@ -8,11 +8,12 @@ ENV DEPS ' \
   binutils \
   bison \
   ca-certificates \
-  clang \
   cmake \
   curl \
   dpkg-dev \
   flex \
+  g++ \
+  gcc \
   git \
   libcurl4-openssl-dev \
   libtool \
