@@ -1,9 +1,9 @@
 FROM build as build_gmp
 
-RUN curl -L -O 'https://ftp.gnu.org/gnu/gmp/gmp-6.2.0.tar.bz2' && \
-  tar jxf gmp-6.2.0.tar.bz2
+RUN curl -L -O 'https://ftp.gnu.org/gnu/gmp/gmp-6.2.1.tar.bz2' && \
+  tar jxf gmp-6.2.1.tar.bz2
 
-WORKDIR gmp-6.2.0
+WORKDIR gmp-6.2.1
 
 RUN CFLAGS='-static -O3 -march=native -W -Wall' \
   CXXFLAGS='-static -O3 -march=native -W -Wall' \
