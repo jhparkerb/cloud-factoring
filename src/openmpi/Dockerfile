@@ -2,11 +2,13 @@ FROM build as build_openmpi
 
 COPY --from=hwloc /pkg/hwloc /pkg/hwloc
 
-RUN curl -L -O \
-  https://download.open-mpi.org/release/open-mpi/v4.0/openmpi-4.0.5.tar.bz2 && \
-    tar xf openmpi-4.0.5.tar.bz2
+ENV VERSION 4.0.5
 
-WORKDIR openmpi-4.0.5
+RUN curl -L -O \
+  https://download.open-mpi.org/release/open-mpi/v${VERSION%.*}/openmpi-${VERSION}.tar.bz2 && \
+    tar xf openmpi-${VERSION}.tar.bz2
+
+WORKDIR openmpi-${VERSION}
 
 RUN ./configure \
     --prefix=/pkg/openmpi \

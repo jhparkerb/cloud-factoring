@@ -4,9 +4,11 @@ COPY --from=hwloc /pkg/hwloc /pkg/hwloc
 COPY --from=openmpi /pkg/openmpi /pkg/openmpi
 COPY --from=gmp /pkg/gmp /pkg/gmp
 
+ENV REVISIION 3dc7496d1fd72bc5f0be34bc7dcbd839e41efa82
+
 RUN git clone https://gitlab.inria.fr/cado-nfs/cado-nfs.git && \
 	cd cado-nfs && \
-	git checkout 3dc7496d1fd72bc5f0be34bc7dcbd839e41efa82
+	git checkout ${REVISION}
 
 
 WORKDIR cado-nfs
