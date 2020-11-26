@@ -8,10 +8,9 @@ WORKDIR hwloc-1.11.13
 
 RUN ./configure \
     --prefix=/pkg/hwloc \
-    --disable-dlopen \
     CFLAGS='-Ofast -march=native' \
     CXXFLAGS='-Ofast -march=native' && \
-  make -s -j$(nproc) all LDFLAGS='-all-static -lpthread' && \
+  make -s -j$(nproc) all && \
   make -s install
 
 FROM scratch as hwloc

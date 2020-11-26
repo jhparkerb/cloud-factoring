@@ -23,6 +23,10 @@ RUN FLAGS_SIZE='-DSIZEOF_P_R_VALUES=8 -DSIZEOF_INDEX=8' \
 FROM debian:buster as cado
 COPY --from=build /pkg /pkg
 
+RUN ls -1d /pkg/*/lib | tee /etc/ld.so.conf.d/pkg.conf && \
+	ldconfig -v && \
+	ldd /pkg/cado/lib/cado-nfs-3.0.0/polyselect/polyselect
+
 ENV DEPS ' \
   curl \
   gzip \
