@@ -1,10 +1,10 @@
 FROM build as build_hwloc
 
 RUN curl -L -O \
-  https://download.open-mpi.org/release/hwloc/v1.11/hwloc-1.11.13.tar.bz2 && \
-    tar xf hwloc-1.11.13.tar.bz2
+  https://download.open-mpi.org/release/hwloc/v2.3/hwloc-2.3.0.tar.bz2 && \
+    tar xf hwloc-2.3.0.tar.bz2
 
-WORKDIR hwloc-1.11.13
+WORKDIR hwloc-2.3.0
 
 RUN ./configure \
     --prefix=/pkg/hwloc \
