@@ -12,7 +12,7 @@ RUN CFLAGS='-O3 -march=native -W -Wall' \
   ./configure \
     --enable-cxx \
     --prefix=/home/build/pkg/gmp &&  \
-  make -j$(nproc)
+  make -s -j$(nproc)
 
 WORKDIR tune
 
@@ -28,9 +28,9 @@ RUN CFLAGS='-O3 -march=native -W -Wall' \
   ./configure \
     --enable-cxx \
     --prefix=/home/build/pkg/gmp &&  \
-  make -j$(nproc) && \
-  make check && \
-  make install
+  make -s -j$(nproc) && \
+  make -s check && \
+  make -s install
 
 FROM scratch as gmp
 COPY --from=build_gmp /home/build/pkg/gmp /pkg/gmp

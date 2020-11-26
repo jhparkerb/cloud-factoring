@@ -25,7 +25,7 @@ FROM debian:buster-slim as cado
 COPY --from=build /pkg /pkg
 
 RUN ls -1d /pkg/*/lib | tee /etc/ld.so.conf.d/pkg.conf && \
-	ldconfig -v && \
+	ldconfig && \
 	ldd /pkg/cado/lib/cado-nfs-3.0.0/polyselect/polyselect
 
 ENV DEPS ' \
