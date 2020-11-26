@@ -20,7 +20,7 @@ RUN FLAGS_SIZE='-DSIZEOF_P_R_VALUES=8 -DSIZEOF_INDEX=8' \
   PREFIX='/pkg/cado' \
 	make -s -j$(nproc) install
 
-FROM debian:buster as cado
+FROM debian:buster-slim as cado
 COPY --from=build /pkg /pkg
 
 RUN ls -1d /pkg/*/lib | tee /etc/ld.so.conf.d/pkg.conf && \
