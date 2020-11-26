@@ -10,7 +10,6 @@ RUN git clone https://gitlab.inria.fr/cado-nfs/cado-nfs.git && \
 	cd cado-nfs && \
 	git checkout ${REVISION}
 
-
 WORKDIR cado-nfs
 
 RUN FLAGS_SIZE='-DSIZEOF_P_R_VALUES=8 -DSIZEOF_INDEX=8' \
