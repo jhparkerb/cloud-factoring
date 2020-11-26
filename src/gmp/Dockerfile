@@ -5,11 +5,9 @@ RUN curl -L -O 'https://ftp.gnu.org/gnu/gmp/gmp-6.2.1.tar.bz2' && \
 
 WORKDIR gmp-6.2.1
 
-RUN CFLAGS='-static -O3 -march=native -W -Wall' \
-  CXXFLAGS='-static -O3 -march=native -W -Wall' \
-  LDFLAGS='-static' \
+RUN CFLAGS='-O3 -march=native -W -Wall' \
+  CXXFLAGS='-O3 -march=native -W -Wall' \
   ./configure \
-    --enable-static \
     --enable-cxx \
     --prefix=/home/build/pkg/gmp &&  \
   make -j$(nproc)
@@ -23,11 +21,9 @@ RUN make tuneup && \
 WORKDIR ..
 
 RUN make clean
-RUN CFLAGS='-static -O3 -march=native -W -Wall' \
-  CXXFLAGS='-static -O3 -march=native -W -Wall' \
-  LDFLAGS='-static' \
+RUN CFLAGS='-O3 -march=native -W -Wall' \
+  CXXFLAGS='-O3 -march=native -W -Wall' \
   ./configure \
-    --enable-static \
     --enable-cxx \
     --prefix=/home/build/pkg/gmp &&  \
   make -j$(nproc) && \
