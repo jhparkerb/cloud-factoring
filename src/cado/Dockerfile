@@ -55,6 +55,5 @@ RUN apt-get -y update && \
 
 USER cado
 ENV BINDIR /pkg/cado/lib/cado-nfs-3.0.0
-ENV LD_LIBRARY_PATH /pkg/lib
 ENV TZ 'US/Eastern'
 WORKDIR /home/cado
