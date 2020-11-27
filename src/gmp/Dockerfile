@@ -17,8 +17,7 @@ RUN CFLAGS='-O3 -march=native -W -Wall' \
 WORKDIR tune
 
 RUN make tuneup && \
-  ./tuneup && \
-  ./tuneup | tee ../mpn/x86_64/zen/gmp-mparam.h
+  ./tuneup > tee ../mpn/x86_64/zen/gmp-mparam.h
 
 WORKDIR ..
 
